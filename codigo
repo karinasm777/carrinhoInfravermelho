@@ -1,0 +1,104 @@
+#include <IRremote.hpp>
+
+// Programa : Teste Controle Remoto IR  
+// Autor : L GUSTAVO
+  
+#include <IRremote.h>  
+  
+int RECV_PIN = 2;  
+float armazenavalor;  
+
+//Confugurações dos pinos
+int IN1 = 3;
+int IN2 = 4;
+int IN3 = 5;
+int IN4 = 6;
+
+IRrecv irrecv(RECV_PIN);  
+
+decode_results results;  
+/*Código dos botões infravermelho do controle remoto
+ * Função do Robô -------   Controle remoto -----------Código Infravermelho (IR)
+ * Avançar --------------   Botão CIMA-----------------2FD41BE
+ * Recuar ---------------   Botão BAIXO----------------2FDC13E
+ * Esquerda -------------   Botão esquerda-------------2FDB847
+ * Direita ---------------  Botão direita--------------2FD9867
+ * Parar------------------  Botão OK-------------------2FD916E
+ */
+
+
+  
+void setup()  
+{  
+  
+pinMode(IN1, OUTPUT);
+pinMode(IN2, OUTPUT);
+pinMode(IN3, OUTPUT);
+pinMode(IN4, OUTPUT);
+  
+   
+  Serial.begin(9600);  
+  
+  irrecv.enableIRIn(); // Inicializa o receptor IR 
+
+//Deixar o carrinho com as rodas livres
+digitalWrite(IN1, LOW);
+digitalWrite(IN2, LOW);
+digitalWrite(IN3, LOW);
+digitalWrite(IN4, LOW);
+}  
+   
+void loop()  
+{  
+  if (irrecv.decode(&results))  
+  {  
+    Serial.print("Valor lido : ");  
+    Serial.println(results.value, HEX);  
+    armazenavalor = (results.value); // = comando de atribuição 
+    
+    if (armazenavalor == 0x2FD41BE) //Frente - avançar  // == comparação lógica
+    {  
+    Serial.print("Avançar!");    
+    digitalWrite(IN1, HIGH);
+    digitalWrite(IN2, LOW);
+    digitalWrite(IN3, HIGH);
+    digitalWrite(IN4, LOW);  
+    }  
+    if (armazenavalor == 0x2FDC13E) // Voltar - recuar
+    {  
+    Serial.print("Recuar!");      
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, HIGH);
+    digitalWrite(IN3, LOW);
+    digitalWrite(IN4, HIGH);    
+    }  
+    if (armazenavalor == 0x2FD9867)  // Direita
+    {
+    Serial.print("Direita!");        
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, LOW);
+    digitalWrite(IN3, HIGH);
+    digitalWrite(IN4, LOW);    
+    }
+    if (armazenavalor == 0x2FDB847)  // esquerda
+    { 
+    Serial.print("Esquerda!");       
+    digitalWrite(IN1, HIGH);
+    digitalWrite(IN2, LOW);
+    digitalWrite(IN3, LOW);
+    digitalWrite(IN4, LOW);    
+    }
+      if (armazenavalor == 0x2FD916E) // Parar
+    {  
+      Serial.print("Parar!");    
+      digitalWrite(IN1, LOW);
+      digitalWrite(IN2, LOW);
+      digitalWrite(IN3, LOW);
+      digitalWrite(IN4, LOW);
+    }   
+    
+
+      
+  irrecv.resume(); //Le o próximo valor  
+  }  
+}  
